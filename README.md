@@ -1,4 +1,5 @@
-Python Bindings for ![efsw](https://web.ensoft.dev/efsw/efsw-logo.svg)
+
+Python Bindings for [efsw](https://github.com/SpartanJ/efsw)
 
 
 # How to build
@@ -6,7 +7,8 @@ Python Bindings for ![efsw](https://web.ensoft.dev/efsw/efsw-logo.svg)
 1. `mkdir build && cd build`
 2. `cmake ..`
 3. `make`
-Go to the `build directory` and find the shared library starting with `pyefsw`
+
+Go to the `build directory` and find the shared library file starting with `pyefsw`
 
 
 # Basic Python Example
@@ -14,15 +16,13 @@ Go to the `build directory` and find the shared library starting with `pyefsw`
 ```python3
 import pyefsw
 from time import sleep
-import signal
 
 class UpdateListener(pyefsw.FileWatchListener):
-    #handleFileAction will be called whenever a change in the watched directory occurs
+    #Called whenever a change in the watched directory occurs
 	def handleFileAction(self, watchID, directory, filename, action, oldFilename):
-		if directory and filename:
-			print(directory, filename)
+	    pass
 
-fileWatcher = pyefsw.FileWatcher(False) # Do not use generic File watcher
+fileWatcher = pyefsw.FileWatcher(False) # Do not use generic file watcher
 listener = UpdateListener()
 watchID1 = fileWatcher.addWatch("/tmp", listener, False) # Track only changes to top-level of /tmp.
 fileWatcher.watch() # Watch for changes
@@ -34,3 +34,4 @@ try:
 except KeyboardInterrupt:
     fileWatcher.removeWatch(watchID1)
 ```
+
