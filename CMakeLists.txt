@@ -14,6 +14,7 @@ endif()
 include(GNUInstallDirs)
 
 find_package(Threads REQUIRED)
+add_subdirectory(extern/pybind11)
 
 option(VERBOSE "Build efsw with verbose mode.")
 option(BUILD_SHARED_LIBS "Build efsw as a shared library" ON)
@@ -128,6 +129,10 @@ else()
 endif()
 
 target_compile_definitions(efsw PRIVATE $<IF:$<CONFIG:Debug>,DEBUG,NDEBUG>)
+
+# Python bindings
+pybind11_add_module(pyefsw MODULE src/pyefsw.cpp) # Add this for Python module
+target_link_libraries(pyefsw PRIVATE efsw) # Link with efsw
 
 if(APPLE)
 	set(MAC_LIBS "-framework CoreFoundation" "-framework CoreServices")
