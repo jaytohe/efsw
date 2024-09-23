@@ -33,9 +33,21 @@ PYBIND11_MODULE(pyefsw, m) {
 	py::class_<efsw::FileWatcher>(m, "FileWatcher")
 		.def(py::init<>())
 		.def(py::init<bool>(), py::arg("useGenericFileWatcher")) // Only allow initialization with explicit constructor FileWatcher( bool useGenericFileWatcher );
-		.def("addWatch", static_cast<efsw::WatchID (efsw::FileWatcher::*)(const std::string&, efsw::FileWatchListener*)>(&efsw::FileWatcher::addWatch))
-		.def("addWatch", static_cast<efsw::WatchID (efsw::FileWatcher::*)(const std::string&, efsw::FileWatchListener*, bool)>(&efsw::FileWatcher::addWatch))
-		.def("addWatch", static_cast<efsw::WatchID (efsw::FileWatcher::*)(const std::string&, efsw::FileWatchListener*, bool, const std::vector<efsw::WatcherOption>&)>(&efsw::FileWatcher::addWatch))
+		.def("addWatch", static_cast<efsw::WatchID (efsw::FileWatcher::*)(const std::string&, efsw::FileWatchListener*)>(&efsw::FileWatcher::addWatch),
+			py::arg("directory"),
+			py::arg("watcher")
+		)
+		.def("addWatch", static_cast<efsw::WatchID (efsw::FileWatcher::*)(const std::string&, efsw::FileWatchListener*, bool)>(&efsw::FileWatcher::addWatch),
+			py::arg("directory"),
+			py::arg("watcher"),
+			py::arg("recursive")
+		)
+		.def("addWatch", static_cast<efsw::WatchID (efsw::FileWatcher::*)(const std::string&, efsw::FileWatchListener*, bool, const std::vector<efsw::WatcherOption>&)>(&efsw::FileWatcher::addWatch),
+			py::arg("directory"),
+			py::arg("watcher"),
+			py::arg("recursive"),
+			py::arg("options")
+		)
 		.def("watch", &efsw::FileWatcher::watch)
 		.def("removeWatch", static_cast<void (efsw::FileWatcher::*)(const std::string&)>(&efsw::FileWatcher::removeWatch))
 		.def("removeWatch", static_cast<void (efsw::FileWatcher::*)(efsw::WatchID)>(&efsw::FileWatcher::removeWatch))
@@ -48,7 +60,13 @@ PYBIND11_MODULE(pyefsw, m) {
 	// Specify trampoline class for FileWatchListener which handles control back to Python (so we can implement the FileWatchListener interface on the Python side)
 	py::class_<efsw::FileWatchListener, PyFileWatchListener>(m, "FileWatchListener")
 		.def(py::init<>())
-		.def("handleFileAction", &efsw::FileWatchListener::handleFileAction);
+		.def("handleFileAction", &efsw::FileWatchListener::handleFileAction,
+			py::arg("watchid"),
+			py::arg("dir"),
+			py::arg("filename"),
+			py::arg("action"),
+			py::arg("oldFilename") = ""
+		);
 
 	//Make the Action enum available to Python side
 	py::enum_<efsw::Action>(m, "Action")
